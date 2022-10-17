@@ -1,0 +1,79 @@
+---
+- name: Installing yum-utils
+  yum: 
+    name: yum-utils
+    state: latest
+
+- name: configuring-yum-manager
+  shell:
+    cmd: sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: Installing docker-ce,cli and compose-plugin
+  shell:
+    cmd: sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+- name: Installing docker-ce,cli and compose-plugin version
+  shell:
+    cmd: sudo yum install docker-ce-18.09.2 docker-ce-cli-18.09.2 containerd.io docker-compose-plugin
+
+- name: start the docker
+  systemd: state=running name=docker
+
+- name: Docker Version
+  shell:
+    cmd: docker --version
+
+- name: Downloading node js
+  shell:
+    cmd: curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+
+- name: Installing Node js
+  yum: 
+    name: nodejs
+    state: latest
+
+- name: npm version
+  shell:
+    cmd: npm --version
+
+- name: creating directories for docker
+  file: 
+    path: /apps
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: creating directories
+  file:
+    path: /apps/docker
+    owner: root
+    group: root
+    mode:'0644'
+
+- name: downloading files from git
+  git:
+      repo: https://username:password@github.com/blah/blah.git
+      dest: /apps/docker/
+
+- name: install npm in DockerNodejsproject directory
+  command: sudo yum install npm
+  args:
+    chdir: /apps/docker/DockerNodeJSProject
+    
+- name: Building Docker nodejs image using docker file
+  shell:
+    cmd: docker build -t testpeople/dockernodejs .
+# Here testpeople is docker username and dockernodejs is docker image file which will be build
+
+- name: Start the container from image that is build
+  shell:
+    cmd:  docker container run -it -p 8081:8080 -d --name nodejsdocker testpeople/dockernodejs
+# -d stands for container to run in background
+# Port Forwarding Between Host and the Container. Right to the colon is a container and Left to the colon is Host. 8081 is the Host and 8080 is the container Port.
+#nodejsdocker is container
+#dockernodejs is image of container which we are going to create for container
+
+# we can use docker push command to push the image to docker repository
+
+
+

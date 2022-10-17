@@ -1,0 +1,6 @@
+region: us-east-1
+instance_type: t2.micro
+ami: ami-06640050dc3f556bb  # Ubuntu 14.04 LTS
+app_code_user: "ec2-user" # remote user
+env: demo
+pem_key: test2 # key.pem
